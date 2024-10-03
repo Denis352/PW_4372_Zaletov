@@ -1,0 +1,192 @@
+#include <iostream>
+#include <conio.h>
+#include <Windows.h>
+
+using namespace std;
+
+
+void SetColor(int text, int bg) {
+	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hStdOut, (WORD)((bg << 4) | text));
+}
+
+int main()
+{
+	setlocale(0, "");
+	unsigned l;
+	string i;
+	int a;
+	cout << "Hello, it's my home work.\n";
+Mo:	cout << "Pleas, choose number at 1 to 3." << endl;
+	cin >> l;
+	switch (l)
+	{
+		/*--------------------------------------------(#1#)------------------------------------------------*/
+	case 1:
+		cout << "1) Please, send something in: (int, short int, long int, float, double, long double, char, bool)" << endl;
+		while (true) {
+			char q = _getch();
+			if (q == 'q') {
+				return 0;
+			}
+			else if (q == 'x') {
+				goto Mo;
+			}
+			else {
+				cin >> i;
+				if (i == "int") {
+					cout << "It's a size of int in bit" << ' ';
+					SetColor(2, 0);
+					cout << sizeof(int) << endl;
+					SetColor(15, 0);
+				}
+				if (i == "short int") {
+					cout << "It's a size of short int in bit" << ' ';
+					SetColor(2, 0);
+					cout << sizeof(short int) << endl;
+					SetColor(15, 0);
+				}
+				if (i == "long int") {
+					cout << "It's a size of long int in bit" << ' ';
+					SetColor(2, 0);
+					cout << sizeof(long int) << endl;
+					SetColor(15, 0);
+				}
+				if (i == "float") {
+					cout << "It's a size of float in bit" << ' '; 
+					SetColor(2, 0);
+					cout << sizeof(float) << endl;
+					SetColor(15, 0);
+				}
+				if (i == "double") {
+					cout << "It's a size of double in bit" << ' '; 
+					SetColor(2, 0);
+					cout << sizeof(double) << endl;
+					SetColor(15, 0);
+				}
+				if (i == "long double") {
+					cout << "It's a size of long double in bit" << ' '; 
+					SetColor(2, 0);
+					cout << sizeof(long double) << endl;
+					SetColor(15, 0);
+				}
+				if (i == "char") {
+					cout << "It's a size of char in bit" << ' ';
+					SetColor(2, 0);
+					cout << sizeof(char) << endl;
+					SetColor(15, 0);
+				}
+				if (i == "bool") {
+					cout << "It's a size of bool in bit" << ' ';
+					SetColor(2, 0);
+					cout << sizeof(bool) << endl;
+					SetColor(15, 0);
+				}
+			}
+		}
+		/*--------------------------------------------(#2#)------------------------------------------------*/
+	case 2:
+		cout << "2) Please, send something number and i will change it in 2ts system. For type: int" << endl;
+		while (true) {
+			char q = _getch();
+			if (q == 'q') {
+				return 0;
+			}
+			else if (q == 'x') {
+				goto Mo;
+			}
+			else {
+				unsigned int mask = 1 << 31;
+				int a;
+				cin >> a;
+				for (int i = 1; i < 32; i++, mask >>= 1) {
+					if (a > 0) {
+						if (i == 1) {
+							SetColor(4, 0);
+							putchar(a & mask ? '1' : '0');
+							SetColor(15, 0);
+						}
+						else if (i == 2 | i % 2 == 0) {
+							putchar(a & mask ? '1' : '1');
+						}
+						else {
+							putchar(a & mask ? '1' : '0');
+						}
+					}
+					else {
+						if (i == 1) {
+							SetColor(4, 0);
+							putchar(a & mask ? '1' : '0');
+							SetColor(15, 0);
+						}
+						else if (i == 2 | i % 2 != 0) {
+							putchar(a & mask ? '0' : '0');
+						}
+						else {
+							putchar(a & mask ? '1' : '0');
+						}
+					}
+					if (i == 1 || i % 8 == 0) {
+						cout << ' ';
+					}
+				}
+				cout << endl;
+			}
+		}
+		/*--------------------------------------------(#3#)------------------------------------------------*/
+	case 3:
+		cout << "2) Please, send something number and i will change it in 2ts system. For type: float" << endl;
+		while (true) {
+			char q = _getch();
+			if (q == 'q') {
+				cout << endl;
+				return 0;
+			}
+			else if (q == 'x') {
+				cout << endl;
+				goto Mo;
+			}
+			else {
+				unsigned int mask = 1 << 31;
+				union {
+					float k;
+					int a;
+				};
+				cin >> k;
+				for (int i = 1; i < 32; i++, mask >>= 1) {
+					if (a > 0) {
+						if (i == 1) {
+							SetColor(9, 0);
+							putchar(a & mask ? '1' : '0');
+							SetColor(15, 0);
+						}
+						else if (i == 2 | i % 2 == 0) {
+							putchar(a & mask ? '1' : '1');
+						}
+						else {
+							putchar(a & mask ? '1' : '0');
+						}
+					}
+					else {
+						if (i == 1) {
+							SetColor(9, 0);
+							putchar(a & mask ? '1' : '0');
+							SetColor(15, 0);
+						}
+						else if (i == 2 | i % 2 != 0) {
+							putchar(a & mask ? '0' : '0');
+						}
+						else {
+							putchar(a & mask ? '1' : '0');
+						}
+					}
+					if (i == 1 || i % 8 == 0) {
+						cout << ' ';
+					}
+				}
+				cout << endl;
+
+			}
+		}
+	}
+}
