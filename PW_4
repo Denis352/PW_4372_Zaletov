@@ -1,0 +1,367 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int schWrd(string text) {
+	istringstream iss(text);
+	string word;
+	int k = 0;
+
+	while (iss >> word) {
+		k++;
+	}
+	return k;
+}
+
+string remSpc(const string& text) {
+	string result;
+	bool space_found = false;
+	for (char c : text) {
+		if (isspace(c)) {
+			if (!space_found) {
+				result += ' ';
+				space_found = true;
+			}
+		}
+		else {
+			result += c;
+			space_found = false;
+		}
+	}
+	if (!result.empty() && result[0] == ' ') {
+		result.erase(0, 1);
+	}
+
+	if (!result.empty() && result[result.size() - 1] == ' ') {
+		result.pop_back();
+	}
+
+	return result;
+}
+
+string remPunct(const string& text) {
+	string result;
+	char last_punc = '\0'; // Отслеживание последнего знака препинания
+	int dots_count = 0;
+
+	for (char c : text) {
+		if (ispunct(c) && c != '.') {
+			if (c != last_punc) {
+				result += c;
+				last_punc = c;
+				dots_count = 0;
+			}
+		}
+		else if (c == '.') {
+			dots_count++;
+			if (dots_count <= 3) {
+				result += c;
+				last_punc = c;
+			}
+			if (dots_count == 3) {
+				dots_count = 0;
+			}
+
+		}
+		else {
+			result += c;
+			last_punc = '\0';
+			dots_count = 0;
+		}
+	}
+	return result;
+}
+
+string fixCase(string text) {
+	if (!text.empty()) {
+		text[1] = toupper(text[1]);
+		for (size_t i = 1; i < text.size(); i++) {
+			text[i] = tolower(text[i]);
+		}
+	}
+	return text;
+}
+
+string fixCaseAllWords(const string& text) {
+	string result;
+	string word;
+	istringstream iss(text);
+	while (iss >> word)
+	{
+		result += fixCase(word);
+		result += " ";
+	}
+	if (!result.empty()) {
+		result.pop_back();
+	}
+	return result;
+}
+
+bool caseInsensitiveCompare(const string& a, const string& b) {
+	char charA, charB;
+
+	size_t indexA = 0;
+	while (indexA < a.size() && isdigit(a[indexA])) {
+		indexA++;
+	}
+	if (indexA < a.size()) {
+		charA = tolower(a[indexA]);
+	}
+	else {
+		charA = '\0';
+	}
+
+	size_t indexB = 0;
+	while (indexB < b.size() && isdigit(b[indexB])) {
+		indexB++;
+	}
+	if (indexB < b.size()) {
+		charB = tolower(b[indexB]);
+	}
+	else {
+		charB = '\0';
+	}
+
+	if (charA != '\0' && charB != '\0') {
+		return charA < charB;
+	}
+	else {
+		if (charA == '\0' && charB == '\0') {
+			return a < b;
+		}
+		else if (charA == '\0') {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+}
+
+string task3(string text) {
+	text.pop_back();
+	string tch = ".";
+	string textAbc;
+
+
+	vector<string> words;
+	istringstream iss(text);
+	string word;
+	while (iss >> word) {
+		words.push_back(word);
+	}
+
+	sort(words.begin(), words.end(), caseInsensitiveCompare);
+
+	for (const string& w : words) {
+		textAbc += w + ' ';
+	}
+
+	textAbc.pop_back();
+	return textAbc + tch;
+}
+
+string NumbToEnd(const string& word) {
+	string letters;
+	string numb;
+
+	for (char c : word) {
+		if (isdigit(c)) {
+			numb += c;
+		}
+		else {
+			letters += c;
+		}
+	}
+	return letters + numb;
+}
+
+string task4(string text) {
+	text.pop_back();
+	string tch = ".";
+	istringstream iss(text);
+	string word;
+	string resultLine;
+	while (iss >> word) {
+		resultLine += NumbToEnd(word) + " ";
+	}
+
+	resultLine.pop_back();
+	return resultLine+tch;
+}
+
+vector<int> searchSubstring(string text, string pattern) {
+	vector<int> l;
+	int n = text.length();
+	int m = pattern.length();
+	for (int i = 0; i <= n - m; i++) {
+		int j;
+		for (j = 0; j < m; j++) {
+			if (text[i + j] != pattern[j]) {
+				break;
+			}
+		}
+		if (j == m) {
+			l.push_back(i);
+		}
+	}
+	return l;
+}
+
+vector<int> PrefixFunction(const string& pattern) {
+	int m = pattern.size();
+	vector<int> pi(m, 0);
+	int k = 0;
+	for (int q = 1; q < m; ++q) {
+		while (k > 0 && pattern[q] != pattern[k]) {
+			k = pi[k - 1];
+		}
+		if (pattern[q] == pattern[k]) {
+			k++;
+		}
+		pi[q] = k;
+	}
+	return pi;
+}
+
+vector<int> kmpSrch(const string& text, const string& pattern) {
+	vector<int> positions;
+	int n = text.size();
+	int m = pattern.size();
+	if (m == 0)
+		return positions; // Если шаблон пустой, то вернем пустой вектор
+
+	vector<int> pi = PrefixFunction(pattern);
+	int q = 0;
+
+	for (int i = 0; i < n; ++i) {
+		while (q > 0 && pattern[q] != text[i]) {
+			q = pi[q - 1];
+		}
+		if (pattern[q] == text[i]) {
+			q++;
+		}
+		if (q == m) {
+			positions.push_back(i - m + 1);
+			q = pi[q - 1];
+		}
+	}
+	return positions;
+}
+
+
+int main() {
+	string start_text, str;
+	
+	//----------------------------#1#----------------------------//
+	cout << "Select the text input method (1 or 2): " << endl;
+	int tk1;
+	cin >> tk1;
+
+	switch (tk1)
+	{
+	default:
+
+	case 1:
+		cin >> str;
+		_flushall();
+		getline(cin, start_text);
+		start_text = str + start_text;
+		break;
+	case 2:
+		string filename;
+		cout << "Enter file name: ";
+		cin >> filename;
+
+		ifstream in(filename);
+
+		if (!in.is_open()) {
+			cerr << "Not finde file: " << filename << endl;
+			return 1;
+		}
+
+		if (in.is_open())
+		{
+			getline(in, start_text);
+		}
+		in.close();
+		break;
+	}
+
+	//Проверка на правильность ввода строки//
+
+	char ch = start_text.back();
+
+	if (empty(start_text) == false and schWrd(start_text)<=50 and ch == '.') {
+		system("cls");
+		cout <<"Your text: " << "\033[31m" << start_text << "\033[0m" << endl;
+	}
+	else {
+		system("cls");
+		cout << "This text is not be true, pleas, start agian)" << endl;
+		return 0;
+	}
+
+	//----------------------------#2#----------------------------//
+
+	start_text = remSpc(start_text);
+
+	start_text = remPunct(start_text);
+
+	start_text = fixCaseAllWords(start_text);
+
+	cout << endl << "2) Text after sort: " << "\033[33m" << start_text << "\033[0m" << endl;
+
+	//----------------------------#3#----------------------------//
+
+	start_text = task3(start_text);
+	cout << endl << "3) After abc. sort: "  << "\033[32m" << start_text << "\033[0m" << endl;
+
+	//----------------------------#4#----------------------------//
+
+	cout << endl << "4) Result task 4: " << "\033[36m" << task4(start_text) << "\033[0m" << endl;
+
+	//----------------------------#5#----------------------------//
+
+	string pattern;
+	cout << endl << "5) Pleas, send your pattern: ";
+	cin >> pattern;
+
+	//-------------------a-------------------//
+
+	cout << endl << "\033[34m" << "Line search" << "\033[0m" << endl;
+
+	vector<int> result = searchSubstring(start_text, pattern);
+	if (result.empty()) {
+		cout << "Pattern is not find(" << endl;
+	}
+	else {
+		cout << "Pattern find on position: ";
+		for (int pos : result) {
+			cout << pos << " ";
+		}
+		cout << endl;
+	}
+
+	//-------------------b-------------------//
+
+	cout << endl << "\033[34m" << "KMP" << "\033[0m" << endl;
+
+	vector<int> positions = kmpSrch(start_text, pattern);
+
+	if (positions.empty()) {
+		cout << "Pattern is not find(" << endl;
+	}
+	else {
+		cout << "Pattern find on positions: ";
+		for (int pos : positions) {
+			cout << pos << " ";
+		}
+		cout << endl;
+	}
+
+}
