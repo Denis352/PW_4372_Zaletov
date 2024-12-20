@@ -1,0 +1,544 @@
+#include <iostream>
+#include <Windows.h>
+#include <limits>
+#include <conio.h>
+
+using namespace std;
+
+const int rows = 6; // Количество строк
+const int cols = 6; // Количество столбцов
+
+int rrand(int range_min, int range_max) {
+    return rand() % (range_max - range_min + 1) + range_min;
+}
+
+void printSpiral(int (*A)[cols]) {
+    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD coord;
+
+    int top = 0, bottom = rows - 1;
+    int left = 0, right = cols - 1;
+
+    while (top <= bottom && left <= right) {
+        // Вывод верхней строки
+        for (int i = left; i <= right; i++) {
+            coord.X = i * 3;
+            coord.Y = top;
+            SetConsoleCursorPosition(hStdout, coord);
+            cout << *(*(A + top) + i) << " ";
+            Sleep(150);
+        }
+        top++;
+
+        // Вывод правого столбца
+        for (int i = top; i <= bottom; i++) {
+            coord.X = right * 3;
+            coord.Y = i;
+            SetConsoleCursorPosition(hStdout, coord);
+            cout << *(*(A + i) + right) << " ";
+            Sleep(150);
+        }
+        right--;
+
+        // Вывод нижней строки
+        if (top <= bottom) {
+            for (int i = right; i >= left; i--) {
+                coord.X = i * 3;
+                coord.Y = bottom;
+                SetConsoleCursorPosition(hStdout, coord);
+                cout << *(*(A + bottom) + i) << " ";
+                Sleep(150);
+            }
+            bottom--;
+
+
+        }
+
+        // Вывод левого столбца
+        if (left <= right) {
+            for (int i = bottom; i >= top; i--) {
+                coord.X = left * 3;
+                coord.Y = i;
+                SetConsoleCursorPosition(hStdout, coord);
+                cout << *(*(A + i) + left) << " ";
+                Sleep(150);
+            }
+            left++;
+        }
+
+    }
+
+    coord.X = 0;
+    coord.Y = rows + 1;
+    SetConsoleCursorPosition(hStdout, coord);
+}
+
+void printZmeika(int (*A)[cols]) {
+    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD coord;
+
+    for (int col = 0; col < cols; col++) {
+        if (col % 2 == 0) {
+            for (int row = 0; row < rows; row++) {
+                coord.X = col * 3;
+                coord.Y = row;
+                SetConsoleCursorPosition(hStdout, coord);
+                cout << *(*(A + row) + col) << " ";
+                Sleep(150);
+            }
+        }
+        else {
+            for (int row = rows - 1; row >= 0; row--) {
+                coord.X = col * 3;
+                coord.Y = row;
+                SetConsoleCursorPosition(hStdout, coord);
+                cout << *(*(A + row) + col) << " ";
+                Sleep(150);
+            }
+        }
+    }
+    coord.X = 0;
+    coord.Y = rows + 1;
+    SetConsoleCursorPosition(hStdout, coord);
+}
+
+void change_A(int (*A)[cols])
+{
+    int blockSize = rows / 2;
+
+    int temp[rows][cols];
+
+    for (int i = 0; i < blockSize; i++) {
+        for (int j = 0; j < blockSize; j++) {
+            // Блок 1 (верхний левый) -> Блок 2 (верхний правый)
+            *(*(temp + i) + (j + blockSize)) = *(*(A + i) + j);
+
+            // Блок 2 (верхний правый) -> Блок 3 (нижний правый)
+            *(*(temp + (i + blockSize)) + (j + blockSize)) = *(*(A + i) + (j + blockSize));
+
+            // Блок 3 (нижний правый) -> Блок 4 (нижний левый)
+            *(*(temp + (i + blockSize)) + j) = *(*(A + (i + blockSize)) + (j + blockSize));
+
+            // Блок 4 (нижний левый) -> Блок 1 (верхний левый)
+            *(*(temp + i) + j) = *(*(A + (i + blockSize)) + j);
+        }
+    }
+
+    // Копируем новые значения обратно в оригинальную матрицу
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            *(*(A + i) + j) = *(*(temp + i) + j);
+        }
+    }
+}
+
+void change_B(int (*A)[cols]) {
+    int blockSize = rows / 2;
+    int temp[rows][cols];
+
+    // Блок 1 -> Блок 4
+    for (int i = 0; i < blockSize; i++) {
+        for (int j = 0; j < blockSize; j++) {
+            *(*(temp + i + blockSize) + (j + blockSize)) = *(*(A + i) + j); // Блок 1 в Блок 4
+        }
+    }
+
+    // Блок 2 -> Блок 3
+    for (int i = 0; i < blockSize; i++) {
+        for (int j = 0; j < blockSize; j++) {
+            *(*(temp + i + blockSize) + j) = *(*(A + i) + (j + blockSize)); // Блок 2 в Блок 3
+        }
+    }
+
+    // Блок 3 -> Блок 2
+    for (int i = 0; i < blockSize; i++) {
+        for (int j = 0; j < blockSize; j++) {
+            *(*(temp + i) + (j + blockSize)) = *(*(A + (i + blockSize)) + j); // Блок 3 в Блок 2
+        }
+    }
+
+    // Блок 4 -> Блок 1
+    for (int i = 0; i < blockSize; i++) {
+        for (int j = 0; j < blockSize; j++) {
+            *(*(temp + i) + j) = *(*(A + (i + blockSize)) + (j + blockSize)); // Блок 4 в Блок 1
+        }
+    }
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            *(*(A + i) + j) = *(*(temp + i) + j);
+        }
+    }
+}
+
+void change_C(int (*A)[cols]) {
+    int blockSize = rows / 2;
+    int temp[rows][cols];
+
+    // Блок 1 -> Блок 3
+    for (int i = 0; i < blockSize; i++) {
+        for (int j = 0; j < blockSize; j++)
+        {
+            *(*(temp + i + blockSize) + j) = *(*(A + i) + j);
+        }
+    }
+
+    // Блок 3 -> Блок 1
+    for (int i = 0; i < blockSize; ++i) {
+        for (int j = 0; j < blockSize; ++j)
+        {
+            *(*(temp + i) + j) = *(*(A + (i + blockSize)) + j);
+        }
+    }
+
+    // Блок 2 -> Блок 4
+    for (int i = 0; i < blockSize; ++i) {
+        for (int j = 0; j < blockSize; ++j)
+        {
+            *(*(temp + i) + (j + blockSize)) = *(*(A + (i + blockSize)) + (j + blockSize));
+        }
+    }
+
+    // Блок 4 -> Блок 2
+    for (int i = 0; i < blockSize; ++i) {
+        for (int j = 0; j < blockSize; ++j)
+        {
+            *(*(temp + i + blockSize) + (j + blockSize)) = *(*(A + i) + (j + blockSize));
+        }
+    }
+
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j)
+        {
+            *(*(A + i) + j) = *(*(temp + i) + j);
+        }
+    }
+}
+
+void change_D(int (*A)[cols]) {
+    int blockSize = rows / 2;
+    int temp[rows][cols];
+
+    // Блок 1 -> Блок 2
+    for (int i = 0; i < blockSize; ++i) {
+        for (int j = 0; j < blockSize; ++j) {
+            *(*(temp + i) + (j + blockSize)) = *(*(A + i) + j);
+        }
+    }
+
+    // Блок 2 -> Блок 1
+    for (int i = 0; i < blockSize; ++i) {
+        for (int j = 0; j < blockSize; ++j) {
+            *(*(temp + i) + j) = *(*(A + i) + (j + blockSize));
+        }
+    }
+
+    // Блок 3 -> Блок 4
+    for (int i = 0; i < blockSize; ++i) {
+        for (int j = 0; j < blockSize; ++j) {
+            *(*(temp + (i + blockSize)) + (j + blockSize)) = *(*(A + (i + blockSize)) + j);
+        }
+    }
+
+    // Блок 4 -> Блок 3
+    for (int i = 0; i < blockSize; ++i) {
+        for (int j = 0; j < blockSize; ++j) {
+            *(*(temp + (i + blockSize)) + j) = *(*(A + (i + blockSize)) + (j + blockSize));
+        }
+    }
+
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            *(*(A + i) + j) = *(*(temp + i) + j);
+        }
+    }
+}
+
+void printMatrix(int (*A)[cols])
+{
+    for (int i = 0; i < rows; ++i)
+    {
+        for (int j = 0; j < cols; ++j)
+        {
+            cout << *(*(A + i) + j) << " ";
+        }
+        cout << endl;
+    }
+}
+
+void insertionSort(int (*A)[cols]) {
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 1; j < cols; ++j) {
+            int key = *(*(A + i) + j);
+            int k = j - 1;
+
+            // Перемещаем элементы arr[i][0..j-1], которые больше ключа,
+            // на одну позицию вперед от их текущей позиции
+            while (k >= 0 && *(*(A + i) + k) > key) {
+                *(*(A + i) + (k + 1)) = *(*(A + i) + k);
+                k--;
+            }
+            *(*(A + i) + (k + 1)) = key;
+        }
+    }
+}
+
+
+void matrixA(int (*A)[cols], int del) {
+
+    for (int i = 0; i < cols; i++) {
+        for (int j = 0; j < cols; j++) {
+            cout << *(*(A + i) + j) - del << " ";
+        }
+        cout << endl;
+    }
+}
+
+void matrixB(int (*A)[cols], int del) {
+
+    for (int i = 0; i < cols; i++) {
+        for (int j = 0; j < cols; j++) {
+            cout << *(*(A + i) + j) + del << " ";
+        }
+        cout << endl;
+    }
+}
+
+void matrixC(int (*A)[cols], int del) {
+
+    for (int i = 0; i < cols; i++) {
+        for (int j = 0; j < cols; j++) {
+            cout << *(*(A + i) + j) * del << " ";
+        }
+        cout << endl;
+    }
+}
+
+void matrixD(int (*A)[cols], int del) {
+    for (int i = 0; i < rows; ++i)
+    {
+        for (int j = 0; j < cols; ++j) 
+        {
+            if (A[i][j] > 0)
+            {
+                float dl = 1.0;
+                cout << A[i][j]*dl / del << " ";
+            }
+            else
+            {
+                float dl = -1.0;
+                cout << A[i][j] * dl / del << " ";
+            }
+        }
+        cout << endl;
+    }
+
+}
+
+void idz5(int (*arr)[cols], int (*arr2)[cols]) {
+    for (int i = 0; i < cols; i++) {
+        for (int j = 0; j < cols; j++) {
+            *(*(arr2 + i) + j) = *(*(arr2 + i) + j) - *(*(arr + i) + j);
+        }
+        cout << endl;
+    }
+}
+
+void printIDZ5(int (*A)[cols]) {
+
+    for (int i = 0; i < cols; i++) {
+        for (int j = 0; j < rows; j++) {
+            cout << *(*(A + i) + j) << " ";
+            Sleep(150);
+        }
+        cout << endl;
+    }
+}
+
+
+int main() {
+    srand(time(NULL));
+    int const n = 6;
+    int A[n][n], B[n][n], C[n][n], arr[n][n], arr2[n][n];
+
+
+    //Создание ранд. чисел в массиве:
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            *(*(A + i) + j) = rrand(1, n * n);
+            *(*(B + i) + j) = *(*(C + i) + j) = *(*(A + i) + j);
+            *(*(arr + i) + j) = rrand(1, n * n);
+            *(*(arr2 + i) + j) = rrand(1, n * n);
+        }
+    }
+    cout << endl;
+    //------------------------------
+
+	int EntTk;
+    while (true)
+    {
+        char q = _getch();
+        if (q == 'q') {
+            return 0;
+        }
+        else {
+            cout << "Enter number of task (1-5) or 'q' for exit: " << endl;
+            cin >> EntTk;
+            switch (EntTk)
+            {
+            default:
+                break;
+            case 1:
+                int tk1;
+                while (true)
+                {
+                    cout << "Send number Spiral or Zmeika (1 or 2) or 0 for exit: ";
+                    cin >> tk1;
+                    switch (tk1)
+                    {
+                    case 1:
+                        system("cls");
+                        printSpiral(A);
+                        break;
+                    case 2:
+                        system("cls");
+                        printZmeika(A);
+                        break;
+                    }
+                    if (tk1 == 0)
+                        break;
+                }
+                break;
+            case 2:
+                int tk2;
+                while (true)
+                {
+                    cout << "Send number (1, 2, 3 or 4) or 0 for exit: ";
+                    cin >> tk2;
+                    switch (tk2)
+                    {
+                    case 1:
+                        system("cls");
+                        cout << "before (a): " << endl;
+                        printMatrix(A);
+                        cout << endl;
+                        cout << "After (a): " << endl;
+                        change_A(A);
+                        printMatrix(A);
+                        break;
+                    case 2:
+                        system("cls");
+                        cout << "before (b): " << endl;
+                        printMatrix(A);
+                        cout << endl;
+                        cout << "After (b): " << endl;
+                        change_B(A);
+                        printMatrix(A);
+                        break;
+                    case 3:
+                        system("cls");
+                        cout << "before (c): " << endl;
+                        printMatrix(A);
+                        cout << endl;
+                        cout << "After (c): " << endl;
+                        change_C(A);
+                        printMatrix(A);
+                        break;
+                    case 4:
+                        system("cls");
+                        cout << "before (d): " << endl;
+                        printMatrix(A);
+                        cout << endl;
+                        cout << "After (d): " << endl;
+                        change_D(A);
+                        printMatrix(A);
+                        break;
+                    }
+                    if (tk2 == 0)
+                        break;
+                }
+                break;
+            case 3:
+                cout << endl << "before sort: " << endl;
+                printMatrix(B);
+                cout << endl;
+                cout << "After sort: " << endl;
+                insertionSort(B);
+                printMatrix(B);
+                break;
+            case 4:
+                int del;
+
+                cout << "Send number: " << endl;
+                cin >> del;
+
+                cout << endl << "Started matrix: " << endl;
+                printMatrix(C);
+
+                int tk4;
+                while (true)
+                {
+                    cout << "Send number (1(-), 2(+), 3(*), 4(/)) or 0 for exit: ";
+                    cin >> tk4;
+                    switch (tk4)
+                    {
+                    default:
+                        break;
+                    case 1:
+                        cout << "Matrix -: " << endl;
+                        matrixA(C, del);
+                        break;
+                    case 2:
+                        cout << "Matrix +: " << endl;
+                        matrixB(C, del);
+                        break;
+                    case 3:
+                        cout << "Matrix *: " << endl;
+                        matrixC(C, del);
+                        break;
+                    case 4:
+                        cout << "Matrix /: " << endl;
+                        if (del == 0) {
+                            cout << "infinity" << endl;
+                        }
+                        else {
+                            matrixD(C, del);
+                        }
+                        break;
+                    }
+                    if (tk4 == 0)
+                        break;
+                }
+           
+                break;
+            case 5:
+                cout << "1 matrix: " << endl;
+                printMatrix(arr);
+
+
+                cout << endl << "2 matrix: " << endl;
+                printMatrix(arr2);
+
+                cout << endl << "Enter 1 to start: " << endl;
+                int idz;
+                cin >> idz;
+                switch (idz)
+                {
+                default:
+                    break;
+                case 1:
+                    cout << "2 matrix after IDZ5: " << endl;
+                    system("cls");
+                    idz5(arr, arr2);
+                    printIDZ5(arr2);
+                    break;
+                }
+                break;
+            }
+
+        }
+    }
+
+}
