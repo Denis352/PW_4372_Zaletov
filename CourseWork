@@ -1,0 +1,41 @@
+#include "Kursach.h"
+#include <locale.h>
+#include <iostream>
+
+using namespace std;
+
+int main() {
+
+	int num_lub;
+	cout << "Send num of lub or 0 to exit: ";
+	cin >> num_lub;
+
+	do {
+		switch (num_lub)
+		{
+		default:
+			break;
+		case 0:
+			return 0;
+
+		case 1:
+			Lab1();
+			break;
+
+		case 2:
+			Lab2();
+			break;
+
+		case 3:
+			Lab3();
+			break;
+
+		case 4:
+			Lab4();
+			break;
+
+		}
+	} while (cin >> num_lub);
+
+	return 0;
+}
