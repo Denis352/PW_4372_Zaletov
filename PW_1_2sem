@@ -1,0 +1,670 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<conio.h>
+#include <fstream>
+#include <algorithm>
+#include <utility> 
+
+using namespace std;
+
+struct Student {
+	string fio;
+	string sex;
+	int group;
+	int numb;
+	int lib_ticket;
+	int exam[3];
+	int dif_test[5];
+};
+
+//----------Practik work start----------//
+void save_inf_in_file(const vector<Student>& students, const string& filename) {
+	ofstream file(filename);
+	for (size_t i = 0; i < students.size(); i++) {
+		const auto& student = students[i];
+		file << student.fio << "\n";
+		file << student.sex << "\n";
+		file << student.group << "\n";
+		file << student.numb << "\n";
+		file << student.lib_ticket << "\n";
+		for (size_t i = 0; i < 3; i++) {
+			file << student.exam[i] << " ";
+		}
+		file << "\n";
+		for (size_t i = 0; i < 5; i++) {
+			file << student.dif_test[i] << " ";
+		}
+		file << "\n";
+	}
+	file.close();
+}
+
+vector<Student> load_inf_from_file(const string& filename) {
+	vector<Student> students;
+	ifstream file(filename);
+	Student student;
+	while (getline(file, student.fio) &&
+		getline(file, student.sex)) {
+		file >> student.group >> student.numb >> student.lib_ticket;
+		for (size_t i = 0; i < 3; i++) {
+			file >> student.exam[i];
+		}
+		for (size_t i = 0; i < 5; i++) {
+			file >> student.dif_test[i];
+		}
+		file.ignore(numeric_limits<streamsize>::max(), '\n');
+		students.push_back(student);
+	}
+	file.close();
+	return students;
+}
+
+void creat_new_inf_about_stud(vector<Student>& students) {
+	Student new_student;
+
+	cout << "Student's number: ";
+	cout << students.size() + 1 << endl;
+
+	cout << "Enter the student's full name: ";
+	getline(cin, new_student.fio);
+
+	cout << "Enter the student's gender: ";
+	getline(cin, new_student.sex);
+
+	cout << "Enter the group number: ";
+	cin >> new_student.group;
+
+	cout << "Enter the student's number in the group list: ";
+	cin >> new_student.numb;
+
+	cout << "Enter the reader's ticket number: ";
+	cin >> new_student.lib_ticket;
+
+	cout << "Enter the grades for the exams: ";
+	for (int i = 0; i < 3; i++) {
+		cin >> new_student.exam[i];
+	}
+
+	cout << "Enter the test scores: ";
+	for (int i = 0; i < 5; i++) {
+		cin >> new_student.dif_test[i];
+	}
+
+	cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+	students.push_back(new_student);
+	save_inf_in_file(students, "students.txt");
+	cout << "Student record added.\n";
+}
+
+void edit_inf_about_stud(vector<Student>& students) {
+	int ind;
+	cout << " Enter the student's index (at 1 to " << students.size() << "): ";
+	cin >> ind;
+	cin.ignore();
+
+	if (ind < 0 or ind > students.size()) {
+		cout << "There is no such index.\n";
+		return;
+	}
+	int i;
+	cout << "1. Full name.\n";
+	cout << "2. Gender.\n";
+	cout << "3. Group number.\n";
+	cout << "4. The number in the group list.\n";
+	cout << "5. Grades for past exams.\n";
+	cout << "6. Grades for past differentiated assessments.\n";
+	cout << "What data do you want to change, enter the index: ";
+	cin >> i;
+	cin.ignore();
+
+	if (i < 1 or i > 6) {
+		cout << "There is no such index.\n";
+		return;
+	}
+	if (i == 1) {
+		cout << "Enter the student's new full name: ";
+		getline(cin, students[ind - 1].fio);
+	}
+
+	if (i == 2) {
+		cout << "Enter the new gender of the student: ";
+		cin.ignore();
+		getline(cin, students[ind - 1].sex);
+	}
+
+	if (i == 3) {
+		cout << "Enter the new student group number: ";
+		cin >> students[ind - 1].group;
+		cin.ignore();
+	}
+
+	if (i == 4) {
+		cout << "Enter a new number in the student's group list: ";
+		cin >> students[ind - 1].numb;
+		cin.ignore();
+	}
+
+	if (i == 5) {
+		cout << "Enter new exam grades: ";
+		for (int i = 0; i < 3; i++) {
+			cin >> students[ind - 1].exam[i];
+		}
+		cin.ignore();
+	}
+
+	if (i == 6) {
+		cout << "Enter new test scores: ";
+		for (int i = 0; i < 5; i++) {
+			cin >> students[ind - 1].dif_test[i];
+		}
+		cin.ignore();
+	}
+	save_inf_in_file(students, "students.txt");
+	cout << "The record was changed successfully.\n";
+}
+
+void print_all_inf_about_stud(vector<Student>& students) {
+	for (int i = 0; i < students.size(); i++) {
+		cout << "\n" << "Student №" << i + 1 << "\n";
+		cout << "Full name of student: " << students[i].fio << "\n";
+		cout << "Gender of student: " << students[i].sex << "\n";
+		cout << "Student's group number: " << students[i].group << "\n";
+		cout << "Student's number in the group list: " << students[i].numb << "\n";
+		cout << "Grades for 3 exams: ";
+		for (int j = 0; j < 3; j++)
+			cout << students[i].exam[j] << " ";
+		cout << "\n";
+		cout << "Grades for 5 dif. credits: ";
+		for (int j = 0; j < 5; j++)
+			cout << students[i].dif_test[j] << " ";
+		cout << "\n";
+		cout << "Reader's card number: " << students[i].lib_ticket << "\n";
+
+	}
+}
+
+void print_students_in_group(const vector<Student>& students, int group_number) {
+	bool found = false;
+	for (const auto& student : students) {
+		if (student.group == group_number) {
+			found = true;
+			cout << "\n" << "Student: " << student.fio << "\n";
+			cout << "Student's gender: " << student.sex << "\n";
+			cout << "Student's group number: " << student.group << "\n";
+			cout << "Student's number in the group list: " << student.numb << "\n";
+			cout << "Grades for 3 exams: ";
+			for (int j = 0; j < 3; j++)
+				cout << student.exam[j] << " ";
+			cout << "\n";
+			cout << "Grades for 5 tests: ";
+			for (int j = 0; j < 5; j++)
+				cout << student.dif_test[j] << " ";
+			cout << "\n";
+			cout << "Reader's card number: " << student.lib_ticket << "\n";
+		}
+	}
+	if (!found) {
+		cout << "Students from the group " << group_number << "not found.\n";
+	}
+}
+
+vector<double> calculate_average_per_session(vector<Student>& students) {
+	vector<double> averages;
+	for (size_t i = 0; i < students.size(); i++) {
+		double sum = 0;
+		for (size_t j = 0; j < 3; j++) {
+			sum += students[i].exam[j];
+		}
+		for (size_t j = 0; j < 5; j++) {
+			sum += students[i].dif_test[j];
+		}
+		averages.push_back(sum / 8.0);
+	}
+	return averages;
+}
+
+bool compare_pairs(const pair<double, Student>& a, const pair<double, Student>& b) {
+	return a.first > b.first;
+}
+
+void print_top_students(const vector<Student>& students, const vector<double>& averages) {
+	if (students.empty()) {
+		cout << "The list of students is empty.\n";
+		return;
+	}
+
+	vector<pair<double, Student>> student_average_pairs;
+	for (size_t i = 0; i < students.size(); i++) {
+		student_average_pairs.push_back({ averages[i], students[i] });
+	}
+
+	sort(student_average_pairs.begin(), student_average_pairs.end(), compare_pairs);
+
+	cout << "Top 3 students with the highest average score:\n";
+	for (int i = 0; i < 3; i++) {
+		const auto& student = student_average_pairs[i].second;
+		double average = student_average_pairs[i].first;
+		cout << "\n" << "Student №" << i + 1 << "\n";
+		cout << "Full name: " << student.fio << "\n";
+		cout << "Group number: " << student.group << "\n";
+		cout << "Average score: " << average << "\n";
+	}
+}
+
+void print_gender_stud(const vector<Student>& students) {
+	int mans_count = 0;
+	int girls_count = 0;
+	for (int i = 0; i < students.size(); i++) {
+		if (students[i].sex == "man") {
+			mans_count ++;
+		}
+		else if (students[i].sex == "woman") {
+			girls_count ++;
+		}
+	}
+
+	cout << "Number of men: " << mans_count << "\n";
+	cout << "Number of women: " << girls_count << "\n";
+}
+
+int student_category_check(const Student& student) {
+	for (int i = 0; i < 3; i++) {
+		if (student.exam[i] < 4)
+			return 1;
+		else {
+			for (int j = 0; j < 5; j++) {
+				if (student.dif_test[j] < 4)
+					return 1;
+			}
+		}
+	}
+
+	for (int i = 0; i < 3; i++) {
+		if (student.exam[i] > 3 and student.exam[i] < 5)
+			return 2;
+		else {
+			for (int j = 0; j < 5; j++) {
+				if (student.exam[j] > 3 and student.exam[j] < 5)
+					return 2;
+			}
+		}
+	}
+
+	for (int i = 0; i < 3; i++) {
+		if (student.exam[i] == 5)
+			return 3;
+		else {
+			for (int j = 0; j < 5; j++) {
+				if (student.exam[j] == 5)
+					return 3;
+			}
+		}
+	}
+	return 0;
+}
+
+void print_students_by_category(const vector<Student>& students, int category) {
+	switch (category) {
+	case 1:
+		cout << "\033[35m";
+		cout << "Students who do not receive a scholarship:\n";
+		cout << "\033[0m";
+		break;
+	case 2:
+		cout << "\033[35m";
+		cout << "Students who study only for «good» and «excellent»:\n";
+		cout << "\033[0m";
+		break;
+	case 3:
+		cout << "\033[35m";
+		cout << "Students who study only for «excellent:\n";
+		cout << "\033[0m";
+		break;
+	default:
+		cout << "There is no such category.\n";
+		return;
+	}
+
+	for (int i = 0; i < students.size(); i++) {
+		if (student_category_check(students[i]) == category) {
+			cout << "Full name: " << students[i].fio << endl;
+			cout << "Exam grades: ";
+			for (int j = 0; j < 3; j++) {
+				cout << students[i].exam[j] << " ";
+			}
+			cout << endl;
+			cout << "Grades for dif. credits: " << students[i].fio << endl;
+			for (int j = 0; j < 5; j++) {
+				cout << students[i].dif_test[j] << " ";
+			}
+			cout << endl;
+		}
+	}
+}
+
+void print_stud_of_numb(const vector<Student>& students, int numd_k) {
+	numd_k = numd_k - 1;
+	cout << "Full name: " << students[numd_k].fio << endl;
+	cout << "Gender: " << students[numd_k].sex << endl;
+	cout << "Group number: " << students[numd_k].group << endl;
+	cout << "The number in the group: " << students[numd_k].numb << endl;
+	cout << "Exam grades: ";
+	for (int j = 0; j < 3; j++) {
+		cout << students[numd_k].exam[j] << " ";
+	}
+	cout << endl;
+	cout << "Grades for dif. credits: " << endl;
+	for (int j = 0; j < 5; j++) {
+		cout << students[numd_k].dif_test[j] << " ";
+	}
+	cout << endl;
+}
+//----------Practik work end----------//
+
+
+//----------library start----------//
+struct library {
+	string autor;
+	string book_name;
+	int public_year;
+	int numb_page;
+	int stud_numb;
+};
+
+void save_inf_in_file_idz(const vector<library>& books, const string& filename) {
+	ofstream file(filename);
+	for (size_t i = 0; i < books.size(); i++) {
+		const auto& book = books[i];
+		file << book.autor << "\n";
+		file << book.book_name << "\n";
+		file << book.public_year << "\n";
+		file << book.numb_page << "\n";
+		file << book.stud_numb << "\n";
+	}
+	file.close();
+}
+
+vector<library> load_inf_from_file_idz(const string& filename) {
+	vector<library> books;
+	ifstream file(filename);
+	library book;
+	while (getline(file, book.autor) &&
+		getline(file, book.book_name)) {
+		file >> book.public_year >> book.numb_page >> book.stud_numb;
+		file.ignore(numeric_limits<streamsize>::max(), '\n');
+		books.push_back(book);
+	}
+	file.close();
+	return books;
+}
+
+void creat_new_inf_about_book(vector<library>& books) {
+	library new_book;
+
+	cout << "Book number: ";
+	cout << books.size() + 1 << endl;
+
+	cout << "Enter the author of the book: ";
+	getline(cin, new_book.autor);
+
+	cout << "Enter the name of the book: ";
+	getline(cin, new_book.book_name);
+
+	cout << "Enter the publication year: ";
+	cin >> new_book.public_year;
+
+	cout << "Enter the number of pages: ";
+	cin >> new_book.numb_page;
+
+	cout << "Enter the student's phone number. tickets: ";
+	cin >> new_book.stud_numb;
+
+	cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+	books.push_back(new_book);
+	save_inf_in_file_idz(books, "library.txt");
+	cout << "Student record added.\n";
+}
+
+void print_all_inf_about_book(vector<library>& books) {
+	for (int i = 0; i < books.size(); i++) {
+		cout << "\n" << "Book №" << i + 1 << "\n";
+		cout << "The author of the book: " << books[i].autor << "\n";
+		cout << "Book number: " << books[i].book_name << "\n";
+		cout << "Publication years: " << books[i].public_year << "\n";
+		cout << "Number of pages: " << books[i].numb_page << "\n";
+		cout << "Student's library card number: " << books[i].stud_numb << "\n";
+	}
+}
+
+//----------library end------------//
+
+//----------IDZ3 start----------//
+void process_have_book_idz(const vector<Student>& students, const vector<library>& books, int st, int bk){
+	for (int i = 0; i < students.size(); i++) {
+		if (st == students[i].lib_ticket)
+			cout << " Student name: " << students[i].fio << "\n";
+	}
+	for (int i = 0; i < books.size(); i++) {
+		if (bk == i+1) {
+			cout << "Book name: " << books[i].book_name << "\n";
+		}
+	}
+}
+void create_new_inf_book(const vector<Student>& students, vector<library>& books, int st, int bk) {
+	if (bk > 0 && bk <= books.size() && st > 0 && st <= students.size()) {
+		books[bk - 1].stud_numb = students[st - 1].lib_ticket;
+		save_inf_in_file_idz(books, "library.txt");
+	}
+	else {
+		cout << "Incorrect data\n";
+	}
+}
+void book_delivery_idz(vector<library>& books, int bk) {
+	if (bk > 0 && bk <= books.size()) {
+		books[bk - 1].stud_numb = 0;
+		save_inf_in_file_idz(books, "library.txt");
+	}
+	else {
+		cout << "Incorrect data\n";
+	}
+}
+//----------IDZ3 end------------//
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+	vector<Student> students = load_inf_from_file("students.txt");
+	vector<library> books = load_inf_from_file_idz("library.txt");
+
+	cout << "What do you want to see (library - 1; IDZ - 2; pr. work - 3): " << endl;
+
+	while (true) {
+		char button = _getch();
+		if (button == 'x')
+			return 0;
+		else {
+			switch (button)
+			{
+			case '1': {
+				cout << "Select the task number (1 - add a new book, 2 - info about book): " << endl;
+				while (true) {
+					char but = _getch();
+					if (but == 'x')
+						break;
+					else {
+						switch (but)
+						{
+						case'1': {
+							cout << "\033[32m";
+							cout << "Task 1. Adding a new book: " << endl;
+							cout << "\033[0m";
+							creat_new_inf_about_book(books);
+							break;
+						}
+
+						case'2': {
+							cout << "\033[32m";
+							cout << "Task 2. All information about books: " << endl;
+							cout << "\033[0m";
+							books = load_inf_from_file_idz("library.txt");
+							print_all_inf_about_book(books);
+							break;
+						}
+						break;
+						}
+					}
+				}
+			}
+			case '2': {
+				cout << "Enter the student's number and book number: " << endl;
+				int st_numb;
+				cout << "Student's number: ";
+				cin >> st_numb;
+				int bk_number;
+				cout << endl << "Book number: ";
+				cin >> bk_number;
+				process_have_book_idz(students, books, st_numb, bk_number);
+
+				cout << "The condition of the book: ";
+				if (books[bk_number - 1].stud_numb == 0) {
+					cout << "Free" << endl;
+					cout << "Would you like to take a book? (y or n)" << "\n";
+					char ans;
+					cin >> ans;
+					if (ans == 'y') {
+						cout << "The student has a numbered book.: " << st_numb << endl;
+						create_new_inf_book(students, books, st_numb, bk_number);
+					}
+					else if (ans == 'n') {
+						return 0;
+					}
+				}
+				else if (bk_number > 0 && bk_number <= books.size() and books[bk_number - 1].stud_numb == st_numb) {
+					cout << "You have the book.\n" << "Should I take the book to the library? (y or n)\n";
+					char ans;
+					cin >> ans;
+					if (ans == 'y') {
+						cout << "The book is in the library.\n";
+						book_delivery_idz(books, bk_number);
+					}
+					else {
+						return 0;
+					}
+				}
+				else {
+					cout << "The student has a book with a reader's card number.\n" << books[bk_number - 1].stud_numb;
+				}
+			break;
+			}
+			case '3': {
+				cout << "Select the task number (1-8): " << endl;
+				while (true) {
+					char but = _getch();
+					if (but == 'q')
+						break;
+					else {
+						switch (but)
+						{
+						case'1': {
+							cout << "\033[32m";
+							cout << "Task 1. Create a new student record: " << endl;
+							cout << "\033[0m";
+							creat_new_inf_about_stud(students);
+							break;
+						}
+						case'2': {
+							cout << "\033[32m";
+							cout << "Task 2. Making changes to an existing record: " << endl;
+							cout << "\033[0m";
+							edit_inf_about_stud(students);
+							break;
+						}
+						case'3': {
+							cout << "\033[32m";
+							cout << "Task 3. Output of all student data: " << endl;
+							cout << "\033[0m";
+							students = load_inf_from_file("students.txt");
+							print_all_inf_about_stud(students);
+							break;
+						}
+						case'4': {
+							cout << "\033[32m";
+							cout << "Task 4. Output information about all students in group N: " << endl;
+							cout << "\033[0m";
+							int N;
+							cout << "Enter the group number: ";
+							cin >> N;
+							print_students_in_group(students, N);
+							break;
+						}
+						case'5': {
+							cout << "\033[32m";
+							cout << "Task 5. Output of the top most successful students with the highest rated average score for the last session: " << endl;
+							cout << "\033[0m";
+							vector<double> averages = calculate_average_per_session(students);
+							print_top_students(students, averages);
+							break;
+						}
+						case'6': {
+							cout << "\033[32m";
+							cout << "Task 6. Withdrawal of students of the same gender: " << endl;
+							cout << "\033[0m";
+							print_gender_stud(students);
+						}
+						case'7': {
+							cout << "\033[32m";
+							cout << "Task 7. Select a category (1-3): " << endl;
+							cout << "\033[0m";
+							while (true) {
+								char choice = _getch();
+								if (choice == 'x')
+									break;
+								else {
+									switch (choice) {
+									case '1':
+										print_students_by_category(students, 1);
+										break;
+									case '2':
+										print_students_by_category(students, 2);
+										break;
+									case '3':
+										print_students_by_category(students, 3);
+										break;
+									default:
+										cout << "Incorrect choice.\n";
+										break;
+									}
+								}
+							}
+							break;
+						}
+						case'8': {
+							cout << "\033[32m";
+							cout << "Task 8. Output of data on students with a number in the list – k." << endl;
+							cout << "\033[0m";
+
+							int k;
+							cout << "Select the student's number (1-" << students.size() << "). To exit, press '"; cout << "\033[31m"; cout << "x";  cout << "\033[0m"; cout << "': " << endl;
+							while (true) {
+								char button_1 = _getch();
+								if (button_1 == 'x')
+									break;
+								else {
+									cin >> k;
+									print_stud_of_numb(students, k);
+								}
+							}
+							break;
+							break;
+						}
+						}
+					}
+				}
+				break;
+			}
+			}
+		}
+	}
+}
