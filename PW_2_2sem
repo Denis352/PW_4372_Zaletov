@@ -60,7 +60,7 @@ public:
 
     void insert(int index, int data) {
         if (index < 0 || index > size) {
-             cout << "Error: Invalid index. \n" <<  endl;
+            cout << "Error: Invalid index. \n" << endl;
             return;
         }
 
@@ -89,7 +89,7 @@ public:
 
     void removeByIndex(int index) {
         if (index < 0 || index >= size || size == 0) {
-             cout << "Error: Invalid index or the list is empty. \n" <<  endl;
+            cout << "Error: Invalid index or the list is empty. \n" << endl;
             return;
         }
 
@@ -146,8 +146,8 @@ public:
 
     int getByIndex(int index) {
         if (index < 0 || index >= size || size == 0) {
-             cout << "Error: Invalid index or the list is empty. \n" <<  endl;
-            return -1; 
+            cout << "Error: Invalid index or the list is empty. \n" << endl;
+            return -1;
         }
         Node* current = head;
         for (int i = 0; i < index; ++i) {
@@ -158,7 +158,7 @@ public:
 
     void swap(int index1, int index2) {
         if (index1 < 0 || index1 >= size || index2 < 0 || index2 >= size || index1 == index2) {
-             cout << "Error: Incorrect indexes or indexes match. \n" <<  endl;
+            cout << "Error: Incorrect indexes or indexes match. \n" << endl;
             return;
         }
 
@@ -178,9 +178,9 @@ public:
 
     void printList() {
         for (Node* current = head; current; current = current->next) {
-             cout << current->data << " ";
+            cout << current->data << " ";
         }
-         cout <<  endl;
+        cout << endl;
     }
 
     void generateRandomList(int n) {
@@ -192,11 +192,11 @@ public:
 
     void getListFromInput() {
         int data;
-        while ( cout << "Enter the element (or -1 to complete):" &&  cin >> data && data != -1) {
-            if ( cin.fail()) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+        while (cout << "Enter the element (or -1 to complete):" && cin >> data && data != -1) {
+            if (cin.fail()) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 continue;
             }
             append(data);
@@ -205,19 +205,60 @@ public:
 
     template <typename Operation>
     long long measureTime(Operation op, int iterations = 1000) {
-        auto start =  chrono::high_resolution_clock::now();
+        auto start = chrono::high_resolution_clock::now();
         for (int i = 0; i < iterations; ++i) {
             op();
         }
-        auto end =  chrono::high_resolution_clock::now();
-        auto duration =  chrono::duration_cast< chrono::microseconds>(end - start);
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
         return duration.count() / iterations;
     }
 };
 
+struct Node1 {
+    int data;
+    Node1* prev;
+    Node1* next;
+    Node1(int value) : data(value), prev(nullptr), next(nullptr) {}
+};
+
+class DoublyLinkedListIDZ {
+public:
+    Node1* head = nullptr;
+    Node1* tail = nullptr;
+
+    void append(int value) {
+        Node1* newNode = new Node1(value);
+        if (!head) {
+            head = tail = newNode;
+            return;
+        }
+        tail->next = newNode;
+        newNode->prev = tail;
+        tail = newNode;
+    }
+
+    void printForward() {
+        for (Node1* curr = head; curr; curr = curr->next)
+            std::cout << curr->data << " ";
+        std::cout << std::endl;
+    }
+
+    ~DoublyLinkedListIDZ() {
+        while (head) {
+            Node1* next = head->next;
+            delete head;
+            head = next;
+        }
+    }
+};
+
+
 class DynamicArray {
 public:
-     vector<int> data;
+    vector<int> data;
+    DoublyLinkedListIDZ linkedListIDZ;
+    DynamicArray(vector<int> initialData) : data(initialData) {}
 
     DynamicArray() {}
 
@@ -227,7 +268,7 @@ public:
 
     void insert(int index, int value) {
         if (index < 0 || index > data.size()) {
-             cout << "Error: Invalid index.\n" <<  endl;
+            cout << "Error: Invalid index.\n" << endl;
             return;
         }
         data.insert(data.begin() + index, value);
@@ -235,7 +276,7 @@ public:
 
     void removeByIndex(int index) {
         if (index < 0 || index >= data.size()) {
-             cout << "Error: Invalid index.\n" <<  endl;
+            cout << "Error: Invalid index.\n" << endl;
             return;
         }
         data.erase(data.begin() + index);
@@ -243,12 +284,12 @@ public:
 
 
     void removeByValue(int value) {
-        data.erase( remove(data.begin(), data.end(), value), data.end());
+        data.erase(remove(data.begin(), data.end(), value), data.end());
     }
 
     int getByIndex(int index) {
         if (index < 0 || index >= data.size()) {
-             cout << "Error: Invalid index. \n" <<  endl;
+            cout << "Error: Invalid index. \n" << endl;
             return -1;
         }
         return data[index];
@@ -256,35 +297,51 @@ public:
 
     void swap(int index1, int index2) {
         if (index1 < 0 || index1 >= data.size() || index2 < 0 || index2 >= data.size() || index1 == index2) {
-             cout << "Error: Incorrect indexes or indexes match. \n" <<  endl;
+            cout << "Error: Incorrect indexes or indexes match. \n" << endl;
             return;
         }
-         swap(data[index1], data[index2]);
+        swap(data[index1], data[index2]);
     }
-
 
     void printArray() {
         for (int value : data) {
-             cout << value << " ";
+            cout << value << " ";
         }
-         cout <<  endl;
+        cout << endl;
     }
 
     void generateRandomArray(int n) {
         srand(time(0));
         data.resize(n);
         for (int i = 0; i < n; ++i) {
-            data[i] = rand() % 100;
+            data[i] = rand() % 100 - 50;
         }
     }
 
+    void incrvalue() {
+        int size = data.size();
+        for (int i = 0; i < size; ++i) {
+            data[i] += rand() % 6;
+            if (data[i] < 0) {
+                linkedListIDZ.append(data[i]);
+            }
+        }
+
+        for (int value : data) {
+            cout << value << " ";
+        }
+        cout << endl;
+
+    }
+
+
     void getArrayFromInput() {
         int value;
-        while ( cout << "Enter the element (or -1 to complete): \n" &&  cin >> value && value != -1) {
-            if ( cin.fail()) {
-                 cout << "Incorrect input. \n" <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+        while (cout << "Enter the element (or 0 to complete):" && cin >> value && value != -1) {
+            if (cin.fail()) {
+                cout << "Incorrect input. \n" << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 continue;
             }
             data.push_back(value);
@@ -293,72 +350,74 @@ public:
 
     template <typename Operation>
     long long measureTime(Operation op, int iterations = 1000) {
-        auto start =  chrono::high_resolution_clock::now();
+        auto start = chrono::high_resolution_clock::now();
         for (int i = 0; i < iterations; ++i) {
             op();
         }
-        auto end =  chrono::high_resolution_clock::now();
-        auto duration =  chrono::duration_cast< chrono::microseconds>(end - start);
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
         return duration.count() / iterations;
     }
 };
 
+
+
 void runDoublyLinkedListTests(DoublyLinkedList& list) {
     int choice;
     while (true) {
-         cout << "\n A doubly linked list - Select an action: \n";
+        cout << "\n A doubly linked list - Select an action: \n";
 
-         cout << "1) Forming a doubly linked list of dimension N. \n";
-         cout << "1. Generate a random list.\n";
-         cout << "2. Enter the list manually.\n";
+        cout << "1) Forming a doubly linked list of dimension N. \n";
+        cout << "1. Generate a random list.\n";
+        cout << "2. Enter the list manually.\n";
 
-         cout << "2) Determining the speed of creating a doubly linked list. \n";
-         cout << "3. Measure the time it takes to create a list. \n";
+        cout << "2) Determining the speed of creating a doubly linked list. \n";
+        cout << "3. Measure the time it takes to create a list. \n";
 
-         cout << "3) Inserting, deleting, swapping, and retrieving a doubly linked list item. \n";
-         cout << "4. Insert an element \n";
-         cout << "5. Delete an item by index \n";
-         cout << "6. Delete an element by value \n";
-         cout << "7. Get an item by index \n";
-         cout << "8. Swap elements \n";
-
-
-         cout << "4) Determining the speed of inserting, deleting, and retrieving an element of a doubly linked list. \n";
-         cout << "9. Measure the insertion time \n";
-         cout << "10. Measure the deletion time by index \n";
-         cout << "11. Measure the deletion time by value \n";
-         cout << "12. Measure the time of receipt by index \n\n";
+        cout << "3) Inserting, deleting, swapping, and retrieving a doubly linked list item. \n";
+        cout << "4. Insert an element \n";
+        cout << "5. Delete an item by index \n";
+        cout << "6. Delete an element by value \n";
+        cout << "7. Get an item by index \n";
+        cout << "8. Swap elements \n";
 
 
+        cout << "4) Determining the speed of inserting, deleting, and retrieving an element of a doubly linked list. \n";
+        cout << "9. Measure the insertion time \n";
+        cout << "10. Measure the deletion time by index \n";
+        cout << "11. Measure the deletion time by value \n";
+        cout << "12. Measure the time of receipt by index \n\n";
 
-         cout << "13. Output a list \n";
-         cout << "14. Go back to the main menu \n";
-         cout << "Enter your number: ";
 
-        if (!( cin >> choice)) {
-             cout << "Incorrect input. \n" <<  endl;
-             cin.clear();
-             cin.ignore( numeric_limits< streamsize>::max(), '\n');
+
+        cout << "13. Output a list \n";
+        cout << "14. Go back to the main menu \n";
+        cout << "Enter your number: ";
+
+        if (!(cin >> choice)) {
+            cout << "Incorrect input. \n" << endl;
+            cin.clear();
+            cin.ignore(numeric_limits< streamsize>::max(), '\n');
             continue;
         }
 
         switch (choice) {
         case 1: {
             int n;
-             cout << "Enter the number of items: ";
-            if (!( cin >> n)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Enter the number of items: ";
+            if (!(cin >> n)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             list.generateRandomList(n);
-             cout << "The list has been created.\n";
+            cout << "The list has been created.\n";
             break;
         }
         case 2:
             list.getListFromInput();
-             cout << "The list is entered.\n";
+            cout << "The list is entered.\n";
             break;
         case 3: {
             int n;
@@ -369,26 +428,25 @@ void runDoublyLinkedListTests(DoublyLinkedList& list) {
                 cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
-            long long time = list.measureTime([&]() { list.generateRandomList(n); }, 10); // Измеряем создание списка
+            long long time = list.measureTime([&]() { list.generateRandomList(n); }, 10);
             cout << "Time to create a list from" << n << " elements: " << time << " mks\n";
-            // list.size = 0; // Сбрасываем размер списка для повторных измерений
             break;
         }
 
         case 4: {
             int index, value;
-             cout << "Index to insert: ";
-            if (!( cin >> index)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Index to insert: ";
+            if (!(cin >> index)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
-             cout << "Value to insert: ";
-            if (!( cin >> value)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Value to insert: ";
+            if (!(cin >> value)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             list.insert(index, value);
@@ -396,11 +454,11 @@ void runDoublyLinkedListTests(DoublyLinkedList& list) {
         }
         case 5: {
             int index;
-             cout << "Index to delete: ";
-            if (!( cin >> index)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Index to delete: ";
+            if (!(cin >> index)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             list.removeByIndex(index);
@@ -408,11 +466,11 @@ void runDoublyLinkedListTests(DoublyLinkedList& list) {
         }
         case 6: {
             int value;
-             cout << "The value to delete: ";
-            if (!( cin >> value)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "The value to delete: ";
+            if (!(cin >> value)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             list.removeByValue(value);
@@ -420,33 +478,33 @@ void runDoublyLinkedListTests(DoublyLinkedList& list) {
         }
         case 7: {
             int index;
-             cout << "The index to get: ";
-            if (!( cin >> index)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "The index to get: ";
+            if (!(cin >> index)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             int value = list.getByIndex(index);
             if (value != -1) {
-                 cout << "Index value " << index << ": " << value <<  endl;
+                cout << "Index value " << index << ": " << value << endl;
             }
             break;
         }
         case 8: {
             int index1, index2;
-             cout << "Index 1 for the exchange: ";
-            if (!( cin >> index1)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Index 1 for the exchange: ";
+            if (!(cin >> index1)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
-             cout << "Index 2 for the exchange: ";
-            if (!( cin >> index2)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Index 2 for the exchange: ";
+            if (!(cin >> index2)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             list.swap(index1, index2);
@@ -454,62 +512,63 @@ void runDoublyLinkedListTests(DoublyLinkedList& list) {
         }
         case 9: {
             int index, value;
-             cout << "Index to insert: ";
-            if (!( cin >> index)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Index to insert: ";
+            if (!(cin >> index)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
-             cout << "Value to insert: ";
-            if (!( cin >> value)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Value to insert: ";
+            if (!(cin >> value)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
 
-            long long time = list.measureTime([&]() { list.insert(index, value); }, 1000);  // Измеряем вставку
-             cout << "Element insertion time: " << time << " mks\n";
+            long long time = list.measureTime([&]() { list.insert(index, value); }, 1000); 
+
+            cout << "Element insertion time: " << time << " mks\n";
             break;
         }
         case 10: {
             int index;
-             cout << "Index to delete: ";
-            if (!( cin >> index)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Index to delete: ";
+            if (!(cin >> index)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             long long time = list.measureTime([&]() { list.removeByIndex(index); }, 1000);
-             cout << "Deletion time by index: " << time << " mks\n";
+            cout << "Deletion time by index: " << time << " mks\n";
             break;
         }
         case 11: {
             int value;
-             cout << "The value to delete: ";
-            if (!( cin >> value)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "The value to delete: ";
+            if (!(cin >> value)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             long long time = list.measureTime([&]() { list.removeByValue(value); }, 1000);
-             cout << "Deletion time by value: " << time << " mks\n";
+            cout << "Deletion time by value: " << time << " mks\n";
             break;
         }
         case 12: {
             int index;
-             cout << "The index to get: ";
-            if (!( cin >> index)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "The index to get: ";
+            if (!(cin >> index)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             long long time = list.measureTime([&]() { list.getByIndex(index); }, 1000);
-             cout << "Time of receipt by index: " << time << " мкс\n";
+            cout << "Time of receipt by index: " << time << " мкс\n";
             break;
         }
 
@@ -519,7 +578,7 @@ void runDoublyLinkedListTests(DoublyLinkedList& list) {
         case 14:
             return;
         default:
-             cout << "Wrong choice.\n";
+            cout << "Wrong choice.\n";
         }
     }
 }
@@ -527,60 +586,60 @@ void runDoublyLinkedListTests(DoublyLinkedList& list) {
 void runDynamicArrayTests(DynamicArray& arr) {
     int choice;
     while (true) {
-         cout << "\n Dynamic Array - Select an action: \n";
+        cout << "\n Dynamic Array - Select an action: \n";
 
-         cout << "1) Forming a dynamic array of dimension N. \n";
-         cout << "1. Generate a random array. \n";
-         cout << "2. Enter the array manually. \n\n";
+        cout << "1) Forming a dynamic array of dimension N. \n";
+        cout << "1. Generate a random array. \n";
+        cout << "2. Enter the array manually. \n\n";
 
-         cout << "2) Determining the speed of creating a dynamic array. \n";
-         cout << "3. Measure the creation time of an array \n\n";
-
-
-         cout << "3) Inserting, deleting, swapping, and retrieving a dynamic array item. \n";
-         cout << "4. Insert an element. \n";
-         cout << "5. Delete an item by index. \n";
-         cout << "6. Delete an element by value. \n";
-         cout << "7. Get an item by index. \n";
-         cout << "8. Swap elements. \n\n";
+        cout << "2) Determining the speed of creating a dynamic array. \n";
+        cout << "3. Measure the creation time of an array \n\n";
 
 
-         cout << "4) Determining the speed of inserting, deleting, and retrieving an element of a dynamic array. \n";
-         cout << "9. Measure the insertion time. \n";
-         cout << "10. Measure the deletion time by index. \n";
-         cout << "11. Measure the deletion time by value. \n";
-         cout << "12. Measure the time of receipt by index. \n\n";
+        cout << "3) Inserting, deleting, swapping, and retrieving a dynamic array item. \n";
+        cout << "4. Insert an element. \n";
+        cout << "5. Delete an item by index. \n";
+        cout << "6. Delete an element by value. \n";
+        cout << "7. Get an item by index. \n";
+        cout << "8. Swap elements. \n\n";
 
 
-         cout << "13. Output an array. \n";
-         cout << "14. Go back to the main menu. \n";
-         cout << "Enter your number: ";
+        cout << "4) Determining the speed of inserting, deleting, and retrieving an element of a dynamic array. \n";
+        cout << "9. Measure the insertion time. \n";
+        cout << "10. Measure the deletion time by index. \n";
+        cout << "11. Measure the deletion time by value. \n";
+        cout << "12. Measure the time of receipt by index. \n\n";
 
 
-        if (!( cin >> choice)) {
-             cout << "Incorrect input." <<  endl;
-             cin.clear();
-             cin.ignore( numeric_limits< streamsize>::max(), '\n');
+        cout << "13. Output an array. \n";
+        cout << "14. Go back to the main menu. \n";
+        cout << "Enter your number: ";
+
+
+        if (!(cin >> choice)) {
+            cout << "Incorrect input." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits< streamsize>::max(), '\n');
             continue;
         }
 
         switch (choice) {
         case 1: {
             int n;
-             cout << "Enter the number of items: ";
-            if (!( cin >> n)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Enter the number of items: ";
+            if (!(cin >> n)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             arr.generateRandomArray(n);
-             cout << "The array has been created.\n";
+            cout << "The array has been created.\n";
             break;
         }
         case 2:
             arr.getArrayFromInput();
-             cout << "The array is entered.\n";
+            cout << "The array is entered.\n";
             break;
         case 3: {
             int n;
@@ -597,18 +656,18 @@ void runDynamicArrayTests(DynamicArray& arr) {
         }
         case 4: {
             int index, value;
-             cout << "Index to insert: ";
-            if (!( cin >> index)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Index to insert: ";
+            if (!(cin >> index)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
-             cout << "Value to insert: ";
-            if (!( cin >> value)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Value to insert: ";
+            if (!(cin >> value)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             arr.insert(index, value);
@@ -616,11 +675,11 @@ void runDynamicArrayTests(DynamicArray& arr) {
         }
         case 5: {
             int index;
-             cout << "Index to delete: ";
-            if (!( cin >> index)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Index to delete: ";
+            if (!(cin >> index)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             arr.removeByIndex(index);
@@ -628,11 +687,11 @@ void runDynamicArrayTests(DynamicArray& arr) {
         }
         case 6: {
             int value;
-             cout << "The value to delete: ";
-            if (!( cin >> value)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "The value to delete: ";
+            if (!(cin >> value)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             arr.removeByValue(value);
@@ -640,33 +699,33 @@ void runDynamicArrayTests(DynamicArray& arr) {
         }
         case 7: {
             int index;
-             cout << "The index to get: ";
-            if (!( cin >> index)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "The index to get: ";
+            if (!(cin >> index)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             int value = arr.getByIndex(index);
             if (value != -1) {
-                 cout << "Index value " << index << ": " << value <<  endl;
+                cout << "Index value " << index << ": " << value << endl;
             }
             break;
         }
         case 8: {
             int index1, index2;
-             cout << "Index 1 for the exchange: ";
-            if (!( cin >> index1)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Index 1 for the exchange: ";
+            if (!(cin >> index1)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
-             cout << "Index 2 for the exchange: ";
-            if (!( cin >> index2)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Index 2 for the exchange: ";
+            if (!(cin >> index2)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             arr.swap(index1, index2);
@@ -674,61 +733,61 @@ void runDynamicArrayTests(DynamicArray& arr) {
         }
         case 9: {
             int index, value;
-             cout << "Index to insert: ";
-            if (!( cin >> index)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Index to insert: ";
+            if (!(cin >> index)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
-             cout << "Value to insert: ";
-            if (!( cin >> value)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Value to insert: ";
+            if (!(cin >> value)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             long long time = arr.measureTime([&]() { arr.insert(index, value); }, 1000);
-             cout << "Element insertion time: " << time << " mks\n";
+            cout << "Element insertion time: " << time << " mks\n";
             break;
         }
         case 10: {
             int index;
-             cout << "Index to delet: ";
-            if (!( cin >> index)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "Index to delet: ";
+            if (!(cin >> index)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             long long time = arr.measureTime([&]() { arr.removeByIndex(index); }, 1000);
-             cout << "Deletion time by index: " << time << " mks\n";
+            cout << "Deletion time by index: " << time << " mks\n";
             break;
         }
         case 11: {
             int value;
-             cout << "The value to delete: ";
-            if (!( cin >> value)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "The value to delete: ";
+            if (!(cin >> value)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             long long time = arr.measureTime([&]() { arr.removeByValue(value); }, 1000);
-             cout << "Deletion time by value: " << time << " mks\n";
+            cout << "Deletion time by value: " << time << " mks\n";
             break;
         }
         case 12: {
             int index;
-             cout << "The index to get: ";
-            if (!( cin >> index)) {
-                 cout << "Incorrect input." <<  endl;
-                 cin.clear();
-                 cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cout << "The index to get: ";
+            if (!(cin >> index)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
                 break;
             }
             long long time = arr.measureTime([&]() { arr.getByIndex(index); }, 1000);
-             cout << "Time of receipt by index: " << time << " mks\n";
+            cout << "Time of receipt by index: " << time << " mks\n";
             break;
         }
         case 13:
@@ -737,28 +796,115 @@ void runDynamicArrayTests(DynamicArray& arr) {
         case 14:
             return;
         default:
-             cout << "Wrong choice.\n";
+            cout << "Wrong choice.\n";
         }
     }
 }
 
 
+
+void idzDynamicArray(DynamicArray& arr) {
+    int choice;
+    while (true) {
+        cout << "\n Select test number: \n";
+
+        cout << "1. Generate a random array. \n";
+
+        cout << "2. Increasing the values (from 0 to 5).\n";
+     
+
+        cout << "3. Go back to the main menu. \n";
+        cout << "Enter your number: ";
+
+
+        if (!(cin >> choice)) {
+            cout << "Incorrect input." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits< streamsize>::max(), '\n');
+            continue;
+        }
+
+        switch (choice) {
+        case 1: {
+            int n;
+            cout << "Enter the number of items: ";
+            if (!(cin >> n)) {
+                cout << "Incorrect input." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits< streamsize>::max(), '\n');
+                break;
+            }
+            arr.generateRandomArray(n);
+            cout << "Your dynemic array:\n";
+            arr.printArray();
+            cout << endl;
+            break;
+        }
+        case 2:
+
+            cout << "Dynamic array after magnification:\n";
+            arr.incrvalue();
+            arr.linkedListIDZ.printForward();
+            cout << endl;
+            break;
+        case 3:
+            return;
+        default:
+            cout << "Wrong choice.\n";
+        }
+    }
+}
+
+
+int** create2Darr(int rows, int cols) {
+    if (rows <= 0 || cols <= 0) return nullptr;
+
+    int** arr = new int* [rows];
+    if (!arr) return nullptr; 
+
+    for (int i = 0; i < rows; ++i) {
+        arr[i] = new int[cols];
+        if (!arr[i]) {
+
+            for (int j = 0; j < i; ++j) {
+                delete[] arr[j];
+            }
+            delete[] arr;
+            return nullptr;
+        }
+    }
+    return arr;
+}
+
+
+void del2Darr(int** arr, int rows) {
+    if (!arr) return; 
+    for (int i = 0; i < rows; ++i) {
+        delete[] arr[i];
+    }
+    delete[] arr;
+}
+
 int main() {
 
     int mainChoice;
 
+    int rows, cols;
+
 
     while (true) {
-         cout << "\nSelect the data structure:\n";
-         cout << "1. A doubly linked list\n";
-         cout << "2. Dynamic array ( vector)\n";
-         cout << "3. Exit\n";
-         cout << "Enter your numb: ";
+        cout << "\nSelect the data structure:\n";
+        cout << "1. A doubly linked list\n";
+        cout << "2. Dynamic array (vector)\n";
+        cout << "3. IDZ\n";
+        cout << "4. Exit\n";
+        cout << "5. Create 2DArray\n";
+        cout << "Enter your numb: ";
 
         if (!(cin >> mainChoice)) {
-            cout << "Incorrect input. \n" <<  endl;
+            cout << "Incorrect input. \n" << endl;
             cin.clear();
-            cin.ignore( numeric_limits< streamsize>::max(), '\n');
+            cin.ignore(numeric_limits< streamsize>::max(), '\n');
             continue;
         }
 
@@ -773,11 +919,47 @@ int main() {
             runDynamicArrayTests(arr);
             break;
         }
-        case 3:
-             cout << "Exit.\n";
+        case 3: {
+            DynamicArray arr;
+            idzDynamicArray(arr);
+        }
+        case 4: {
+            cout << "Exit.\n";
             return 0;
+        }
+        case 5: {
+            cout << "Enter rows: ";
+            cin >> rows;
+            cout << "Enter cols: ";
+            cin >> cols;
+
+            int** arr = create2Darr(rows, cols);
+
+            if (arr) {
+  
+                for (int i = 0; i < rows; ++i) {
+                    for (int j = 0; j < cols; ++j) {
+                        arr[i][j] = i * cols + j;
+                    }
+                }
+
+                for (int i = 0; i < rows; ++i) {
+                    for (int j = 0; j < cols; ++j) {
+                        cout << arr[i][j] << " ";
+                    }
+                    cout << endl;
+                }
+
+                del2Darr(arr, rows);
+            }
+            else {
+                cout << "Memory allocation failed!\n";
+            }
+
+
+        }
         default:
-             cout << "Wrong choice.\n";
+            cout << "Wrong choice.\n";
         }
     }
     return 0;
