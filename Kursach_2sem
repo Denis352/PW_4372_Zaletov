@@ -1,0 +1,379 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <queue>
+#include <random>
+#include <chrono>
+
+using namespace std;
+
+struct TreeNode {
+    int data;
+    TreeNode* left;
+    TreeNode* right;
+
+    TreeNode(int value) : data(value), left(nullptr), right(nullptr) {}
+};
+
+
+TreeNode* createBinaryTreeRandom(int n) {
+    if (n <= 0) return nullptr;
+
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> distrib(-99, 99);
+
+    TreeNode* root = new TreeNode(distrib(gen));
+    queue<TreeNode*> q;
+    q.push(root);
+
+    int count = 1;
+    while (count < n) {
+        TreeNode* current = q.front();
+        q.pop();
+
+        if (count < n) {
+            current->left = new TreeNode(distrib(gen));
+            q.push(current->left);
+            count++;
+        }
+        if (count < n) {
+            current->right = new TreeNode(distrib(gen));
+            q.push(current->right);
+            count++;
+        }
+    }
+    return root;
+}
+
+TreeNode* createBinaryTreeFromArray(const vector<int>& arr) {
+    if (arr.empty()) return nullptr;
+
+    TreeNode* root = new TreeNode(arr[0]);
+    queue<TreeNode*> q;
+    q.push(root);
+
+    int i = 1;
+    while (!q.empty() && i < arr.size()) {
+        TreeNode* current = q.front();
+        q.pop();
+
+        if (i < arr.size()) {
+            current->left = new TreeNode(arr[i]);
+            q.push(current->left);
+            i++;
+        }
+        if (i < arr.size()) {
+            current->right = new TreeNode(arr[i]);
+            q.push(current->right);
+            i++;
+        }
+    }
+
+    return root;
+}
+
+TreeNode* createBinaryTreeFromFile(const string& filename) {
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cerr << "Couldn't open the file: " << filename << endl;
+        return nullptr;
+    }
+
+    vector<int> arr;
+    int num;
+    while (file >> num) {
+        arr.push_back(num);
+    }
+    file.close();
+
+    return createBinaryTreeFromArray(arr);
+}
+
+
+
+void printBinaryTree(TreeNode* root, string indent = "", bool right = false) {
+    if (root == nullptr) return;
+
+    printBinaryTree(root->right, indent + (right ? "        " : " |      "), true);
+    cout << indent << (right ? " /" : " \\") << "--> " << root->data << endl;
+    printBinaryTree(root->left, indent + (right ? " |      " : "        "), false);
+}
+
+void printBinaryTreeToFile(TreeNode* root, ofstream& file, string indent = "", bool right = false) {
+    if (root == nullptr) return;
+
+    printBinaryTreeToFile(root->right, file, indent + (right ? "        " : " |      "), true);
+    file << indent << (right ? " /" : " \\") << "--> " << root->data << endl;
+    printBinaryTreeToFile(root->left, file, indent + (right ? " |      " : "        "), false);
+}
+
+
+
+void preorderTraversal(TreeNode* root) {
+    if (root != nullptr) {
+        cout << root->data << " ";
+        preorderTraversal(root->left);
+        preorderTraversal(root->right);
+    }
+}
+
+void inorderTraversal(TreeNode* root) {
+    if (root != nullptr) {
+        inorderTraversal(root->left);
+        cout << root->data << " ";
+        inorderTraversal(root->right);
+    }
+}
+
+void postorderTraversal(TreeNode* root) {
+    if (root != nullptr) {
+        postorderTraversal(root->left);
+        postorderTraversal(root->right);
+        cout << root->data << " ";
+    }
+}
+
+void breadthFirstTraversal(TreeNode* root) {
+    if (root == nullptr) return;
+
+    queue<TreeNode*> q;
+    q.push(root);
+
+    while (!q.empty()) {
+        TreeNode* current = q.front();
+        cout << current->data << " ";
+        q.pop();
+
+        if (current->left) q.push(current->left);
+        if (current->right) q.push(current->right);
+    }
+}
+
+
+void deleteBinaryTree(TreeNode* root) {
+    if (root) {
+        deleteBinaryTree(root->left);
+        deleteBinaryTree(root->right);
+        delete root;
+    }
+}
+
+
+//==================== Функции анализа скорости ====================
+
+
+template <typename Func, typename... Args>
+
+long long measureExecutionTime(Func func, Args&&... args) {
+    auto start = chrono::high_resolution_clock::now();
+    func(forward<Args>(args)...);
+    auto end = chrono::high_resolution_clock::now();
+    return chrono::duration_cast<chrono::microseconds>(end - start).count();
+}
+
+
+TreeNode* insertNode(TreeNode* root, int value) {
+    // TODO: Реализовать вставку в бинарное дерево поиска
+    if (root == nullptr) {
+        return new TreeNode(value);
+    }
+
+    if (value < root->data) {
+        root->left = insertNode(root->left, value);
+    }
+    else {
+        root->right = insertNode(root->right, value);
+    }
+
+    return root;
+}
+
+TreeNode* deleteNode(TreeNode* root, int value) {
+    // TODO: Реализовать удаление из бинарного дерева поиска
+    return root;
+}
+
+TreeNode* searchNode(TreeNode* root, int value) {
+    // TODO: Реализовать поиск в бинарном дереве поиска
+    return nullptr;
+}
+
+
+string generateTask(int taskNumber);
+string generateKey(int taskNumber);
+string generateAnswer(int taskNumber);
+
+
+void generateTasks(int numVariants, const string& tasksFilename, const string& keysFilename, const string& answersFilename) {
+    ofstream tasksFile(tasksFilename);
+    ofstream keysFile(keysFilename);
+    ofstream answersFile(answersFilename);
+
+    if (!tasksFile.is_open() || !keysFile.is_open() || !answersFile.is_open()) {
+        cerr << "Error opening files for generating tasks." << endl;
+        return;
+    }
+
+    for (int i = 1; i <= numVariants; ++i) {
+        tasksFile << "Вариант " << i << ":" << endl;
+        tasksFile << generateTask(i) << endl << endl;
+
+        keysFile << "Вариант " << i << ":" << endl;
+        keysFile << generateKey(i) << endl << endl;
+
+        answersFile << "Вариант " << i << ":" << endl;
+        answersFile << generateAnswer(i) << endl << endl;
+    }
+
+    tasksFile.close();
+    keysFile.close();
+    answersFile.close();
+}
+
+//  TODO: Реализовать функции генерации заданий, ключей и ответов (примеры)
+string generateTask(int taskNumber) {
+    if (taskNumber == 1) {
+        return "Создайте бинарное дерево поиска из следующего массива: [5, 3, 7, 2, 4, 6, 8].";
+    }
+    else if (taskNumber == 2) {
+        return "Удалите элемент 4 из бинарного дерева поиска, построенного из массива [5, 3, 7, 2, 4, 6, 8].";
+    }
+    else if (taskNumber == 3) {
+        return "тест заданий.";
+    }
+    return "Unknown assignment..";
+}
+
+string generateKey(int taskNumber) {
+    if (taskNumber == 1) {
+        return "Корнем должен быть 5, левое поддерево меньше 5, правое больше 5.";
+    }
+    else if (taskNumber == 2) {
+        return "4 удаляется, ближайший по значению элемент становится на его место (возможно, поддерево меняется).";
+    }
+    return "Unknown key.";
+}
+
+string generateAnswer(int taskNumber) {
+    if (taskNumber == 1) {
+        return "Пошаговое построение дерева с объяснением, как добавляется каждый элемент.";
+    }
+    else if (taskNumber == 2) {
+        return "Описание алгоритма удаления и конкретные шаги для данного дерева и элемента.";
+    }
+    return "Unknown answer.";
+}
+
+int main() {
+
+    setlocale(LC_ALL, "Russian");
+
+    int choice;
+    cout << "Choose the method of forming the tree:" << endl;
+    cout << "1. Random numbers. (a)" << endl;
+    cout << "2. From the array entered from the keyboard. (b)" << endl;
+    cout << "3. From the file. (v)" << endl;
+    cin >> choice;
+
+    TreeNode* root = nullptr;
+    vector<int> arr;
+
+    switch (choice) {
+    case 1: {
+        int n;
+        cout << "Enter the number of items: ";
+        cin >> n;
+        auto start = chrono::high_resolution_clock::now();
+        root = createBinaryTreeRandom(n);
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+        cout << "The time of tree formation: " << duration.count() << " microseconds" << endl;
+        break;
+    }
+    case 2: {
+        string inputLine;
+        cout << "Enter the array elements separated by a space: ";
+        cin.ignore(); 
+        getline(cin, inputLine);
+        stringstream ss(inputLine);
+        int num;
+        while (ss >> num) {
+            arr.push_back(num);
+        }
+        auto start = chrono::high_resolution_clock::now();
+        root = createBinaryTreeFromArray(arr);
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+        cout << "The time of tree formation: " << duration.count() << " microseconds" << endl;
+
+        break;
+    }
+    case 3: {
+        string filename;
+        cout << "Enter the file name: ";
+        cin >> filename;
+        auto start = chrono::high_resolution_clock::now();
+        root = createBinaryTreeFromFile(filename);
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+        cout << "The time of tree formation: " << duration.count() << " microseconds" << endl;
+        break;
+    }
+    default:
+        cout << "Wrong choice." << endl;
+        return 1;
+    }
+
+    if (root) {
+        cout << "\nTree (console):\n";
+        printBinaryTree(root);
+
+        ofstream treeFile("tree.txt");
+        if (treeFile.is_open()) {
+            printBinaryTreeToFile(root, treeFile);
+            treeFile.close();
+            cout << "\nThe tree is saved to a file tree.txt\n";
+        }
+        else {
+            cerr << "Couldn't open the file tree.txt\n";
+        }
+
+        cout << "\nDirect bypass: ";
+        preorderTraversal(root);
+        cout << endl;
+
+        cout << "Reverse bypass: ";
+        inorderTraversal(root);
+        cout << endl;
+
+        cout << "Breadth-first traversal: ";
+        breadthFirstTraversal(root);
+        cout << endl;
+
+     
+        int insertValue = 50;
+        long long insertTime = measureExecutionTime([&]() { root = insertNode(root, insertValue); });
+        cout << "\nElement insertion time: " << insertTime << " microseconds" << endl;
+
+        int searchValue = 25;
+        long long searchTime = measureExecutionTime([&]() { searchNode(root, searchValue); });
+        cout << "Item Search Time: " << searchTime << " microseconds" << endl;
+
+        int deleteValue = 50;
+        long long deleteTime = measureExecutionTime([&]() { deleteNode(root, deleteValue); });
+        cout << "Time to delete an item: " << deleteTime << " microseconds" << endl;
+
+
+        int numVariants;
+        cout << "\nEnter the number of options for generating tasks: ";
+        cin >> numVariants;
+        generateTasks(numVariants, "outputTask.txt", "outputKey.txt", "outputAns.txt");
+        cout << "The tasks are generated in files outputTask.txt, outputKey.txt, outputAns.txt\n";
+
+        deleteBinaryTree(root); 
+    }
+
+    return 0;
+}
